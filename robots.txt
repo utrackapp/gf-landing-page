@@ -1,0 +1,11 @@
+# Allow all crawlers, including Meta (facebookexternalhit)
+User-agent: *
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+Sitemap: https://grupofernandez.co/sitemap.xml
