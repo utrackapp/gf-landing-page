@@ -11,53 +11,486 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; background: oklch(0.17 0.035 258); }
   ::selection { background: oklch(0.7 0.14 220 / 0.35); }
+  img { max-width: 100%; height: auto; display: block; }
   @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-14px); } }
   @keyframes pulseGlow { 0%,100% { opacity: 0.5; } 50% { opacity: 0.9; } }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+  .page {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: oklch(0.17 0.035 258);
+    color: oklch(0.97 0.006 258);
+    overflow-x: hidden;
+  }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(16px);
+    background: oklch(0.17 0.035 258 / 0.75);
+    border-bottom: 1px solid oklch(1 0 0 / 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+  }
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .nav-brand span {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .nav-links-desktop { display: none; gap: 32px; }
+  .nav-cta {
+    background: oklch(0.97 0.006 258);
+    color: oklch(0.17 0.035 258);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .section { padding: 64px 20px; }
+  .section-tight { padding: 40px 20px; }
+  .section-hero {
+    position: relative;
+    padding: 56px 20px 72px;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% 0%, oklch(0.3 0.07 250 / 0.6), transparent),
+      radial-gradient(ellipse 700px 500px at 90% 20%, oklch(0.28 0.09 280 / 0.4), transparent);
+    border-bottom: 1px solid oklch(1 0 0 / 0.06);
+  }
+  .section-muted {
+    background: oklch(0.155 0.032 258);
+    border-top: 1px solid oklch(1 0 0 / 0.06);
+    border-bottom: 1px solid oklch(1 0 0 / 0.06);
+  }
+  .container { max-width: 1240px; margin: 0 auto; }
+  .container-md { max-width: 1000px; margin: 0 auto; }
+  .container-sm { max-width: 800px; margin: 0 auto; }
+  .container-stack { max-width: 1100px; margin: 0 auto; }
+
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(oklch(1 0 0 / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(1 0 0 / 0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black, transparent);
+    pointer-events: none;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: oklch(1 0 0 / 0.06);
+    border: 1px solid oklch(1 0 0 / 0.12);
+    font-size: 12px;
+    color: oklch(0.8 0.1 220);
+    margin-bottom: 20px;
+  }
+  .hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    line-height: 1.08;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+    text-wrap: pretty;
+  }
+  .hero-lead {
+    font-size: 16px;
+    line-height: 1.6;
+    color: oklch(0.78 0.015 258);
+    max-width: 520px;
+    margin: 0 0 28px;
+    text-wrap: pretty;
+  }
+  .cta-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: oklch(0.97 0.006 258);
+    color: oklch(0.17 0.035 258);
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .btn-secondary {
+    background: oklch(1 0 0 / 0.06);
+    border: 1px solid oklch(1 0 0 / 0.15);
+    color: oklch(0.95 0.005 258);
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .hero-visual { position: relative; animation: float 6s ease-in-out infinite; }
+  .hero-panel {
+    border-radius: 20px;
+    background: linear-gradient(160deg, oklch(0.23 0.03 258), oklch(0.2 0.03 258));
+    border: 1px solid oklch(1 0 0 / 0.1);
+    padding: 20px;
+    box-shadow: 0 40px 80px -20px oklch(0.1 0.02 258 / 0.6);
+  }
+
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .trust-item {
+    text-align: center;
+    padding: 14px 8px;
+    border-radius: 12px;
+    background: oklch(1 0 0 / 0.03);
+    border: 1px solid oklch(1 0 0 / 0.07);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: oklch(0.85 0.01 258);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .about-points {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .label {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: oklch(0.75 0.13 220);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.75rem, 5vw, 2.375rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .body {
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: oklch(0.78 0.015 258);
+    margin: 0;
+  }
+
+  .section-head {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .section-head .h2 { margin-top: 0; }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .service-card {
+    background: oklch(1 0 0 / 0.03);
+    border: 1px solid oklch(1 0 0 / 0.08);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .project {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: center;
+    margin-bottom: 72px;
+  }
+  .project:last-child { margin-bottom: 0; }
+  .project-copy { order: 1; }
+  .project-media {
+    order: 2;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
+  .project-media.is-padded { padding: 0; }
+  .project h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.5rem, 4vw, 1.75rem);
+    font-weight: 700;
+    margin: 0 0 14px;
+  }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .phone-overlay,
+  .secondary-shot { display: none; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .compare-card {
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .compare-card.muted {
+    background: oklch(1 0 0 / 0.02);
+    border: 1px solid oklch(1 0 0 / 0.07);
+  }
+  .compare-card.accent {
+    background: linear-gradient(160deg, oklch(0.24 0.045 250), oklch(0.2 0.04 258));
+    border: 1px solid oklch(0.5 0.08 230 / 0.4);
+  }
+
+  .tech-wrap { text-align: center; }
+  .tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  .tech-chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: oklch(1 0 0 / 0.04);
+    border: 1px solid oklch(1 0 0 / 0.09);
+    color: oklch(0.85 0.01 258);
+  }
+
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 12px;
+    position: relative;
+  }
+  .process-line { display: none; }
+  .process-step { position: relative; text-align: center; }
+
+  .faq-q {
+    font-size: 15px;
+    font-weight: 600;
+    color: oklch(0.94 0.008 258);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .contact-form {
+    background: oklch(1 0 0 / 0.03);
+    border: 1px solid oklch(1 0 0 / 0.08);
+    border-radius: 18px;
+    padding: 8px;
+    overflow: hidden;
+  }
+  .contact-form iframe {
+    width: 100%;
+    height: 720px;
+    border: none;
+    border-radius: 12px;
+    background: oklch(0.97 0.006 258);
+    display: block;
+  }
+
+  .footer {
+    padding: 40px 20px;
+    border-top: 1px solid oklch(1 0 0 / 0.08);
+  }
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 20px;
+  }
+  .footer-links a {
+    color: oklch(0.7 0.012 258);
+    text-decoration: none;
+    font-size: 13.5px;
+  }
+
+  .mono-caption {
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: oklch(0.6 0.01 258);
+  }
+
+  @media (min-width: 640px) {
+    .feature-grid { grid-template-columns: 1fr 1fr; }
+    .about-points { grid-template-columns: 1fr 1fr; }
+    .trust-grid { grid-template-columns: repeat(3, 1fr); }
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+    .process-grid { grid-template-columns: repeat(3, 1fr); }
+    .hero-panel { padding: 28px; }
+    .eyebrow { font-size: 13px; }
+    .hero-lead { font-size: 18px; }
+    .nav-cta { padding: 10px 20px; font-size: 14px; }
+    .nav-brand span { font-size: 18px; }
+  }
+
+  @media (min-width: 900px) {
+    .nav { padding: 18px 32px; }
+    .nav-links-desktop { display: flex; }
+    .section { padding: 100px 32px; }
+    .section-tight { padding: 40px 32px; }
+    .section-hero { padding: 80px 32px 100px; }
+    .section-head { margin-bottom: 56px; }
+    .hero-grid { grid-template-columns: 1.1fr 0.9fr; gap: 48px; }
+    .about-grid { grid-template-columns: 0.85fr 1.15fr; gap: 56px; }
+    .services-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .project { grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 96px; }
+    .project-media.is-padded { padding: 20px 20px 40px 0; }
+    .project-media.is-padded-alt { padding: 20px 40px 56px 20px; }
+    .phone-overlay {
+      display: block;
+      position: absolute;
+      right: -8px;
+      bottom: 0;
+      width: 138px;
+      height: 300px;
+      overflow: hidden;
+      box-shadow: 0 24px 48px -16px oklch(0.1 0.02 258 / 0.8);
+      border-radius: 24px;
+    }
+    .secondary-shot {
+      display: block;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: min(300px, 45%);
+      box-shadow: 0 24px 48px -16px oklch(0.1 0.02 258 / 0.8);
+    }
+    .compare-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+    .contact-grid { grid-template-columns: 1fr 1fr; gap: 48px; }
+    .contact-form iframe { height: 900px; }
+    .footer { padding: 56px 32px; }
+    .footer-inner {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .process-grid { grid-template-columns: repeat(6, 1fr); gap: 16px; }
+    .process-line {
+      display: block;
+      position: absolute;
+      top: 19px;
+      left: 8%;
+      right: 8%;
+      height: 1px;
+      background: oklch(1 0 0 / 0.12);
+    }
+    .project.is-reversed .project-copy { order: 2; }
+    .project.is-reversed .project-media { order: 1; }
+  }
+
+  @media (min-width: 1100px) {
+    .nav { padding: 18px 48px; }
+    .section { padding: 100px 48px; }
+    .section-tight { padding: 40px 48px; }
+    .section-hero { padding: 100px 48px 120px; }
+    .hero-grid { gap: 64px; }
+    .about-grid { gap: 72px; }
+    .project { gap: 56px; }
+    .trust-grid { grid-template-columns: repeat(6, 1fr); gap: 16px; }
+    .footer { padding: 56px 48px; }
+    .contact-grid { gap: 64px; }
+  }
 </style>
 </helmet>
 
-<div style="font-family: 'IBM Plex Sans', sans-serif; background: oklch(0.17 0.035 258); color: oklch(0.97 0.006 258); overflow-x: hidden;">
+<div class="page">
 
   <!-- NAV -->
-  <div style="position: sticky; top: 0; z-index: 100; backdrop-filter: blur(16px); background: oklch(0.17 0.035 258 / 0.75); border-bottom: 1px solid oklch(1 0 0 / 0.08); display: flex; align-items: center; justify-content: space-between; padding: 18px 48px;">
-    <div style="display: flex; align-items: center; gap: 10px;">
+  <div class="nav">
+    <div class="nav-brand">
       <div style="width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, oklch(0.75 0.14 220), oklch(0.65 0.14 280)); flex-shrink: 0;"></div>
-      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em;">Grupo Fernández</span>
+      <span>Grupo Fernández</span>
     </div>
-    <div style="display: flex; align-items: center; gap: 36px;">
-      <a href="#services" style="color: oklch(0.85 0.01 258); text-decoration: none; font-size: 14.5px; display: none;" class="nav-link">Services</a>
-      <div style="display: flex; gap: 32px;" class="nav-links-desktop">
+    <div class="nav-actions">
+      <div class="nav-links-desktop">
         <a href="#services" style="color: oklch(0.85 0.01 258); text-decoration: none; font-size: 14.5px;">Services</a>
         <a href="#work" style="color: oklch(0.85 0.01 258); text-decoration: none; font-size: 14.5px;">Work</a>
         <a href="#process" style="color: oklch(0.85 0.01 258); text-decoration: none; font-size: 14.5px;">Process</a>
         <a href="#faq" style="color: oklch(0.85 0.01 258); text-decoration: none; font-size: 14.5px;">FAQ</a>
       </div>
-      <a href="#contact" style="background: oklch(0.97 0.006 258); color: oklch(0.17 0.035 258); padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap;">Book a Call</a>
+      <a href="#contact" class="nav-cta">Book a Call</a>
     </div>
   </div>
 
   <!-- HERO -->
-  <div style="position: relative; padding: 100px 48px 120px; background: radial-gradient(ellipse 900px 500px at 15% 0%, oklch(0.3 0.07 250 / 0.6), transparent), radial-gradient(ellipse 700px 500px at 90% 20%, oklch(0.28 0.09 280 / 0.4), transparent); border-bottom: 1px solid oklch(1 0 0 / 0.06);">
-    <div style="position: absolute; inset: 0; background-image: linear-gradient(oklch(1 0 0 / 0.035) 1px, transparent 1px), linear-gradient(90deg, oklch(1 0 0 / 0.035) 1px, transparent 1px); background-size: 64px 64px; mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black, transparent); pointer-events: none;"></div>
-    <div style="position: relative; max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 64px; align-items: center;">
-      <div style="animation: fadeUp 0.8s ease both;">
-        <div style="display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: oklch(1 0 0 / 0.06); border: 1px solid oklch(1 0 0 / 0.12); font-size: 13px; color: oklch(0.8 0.1 220); margin-bottom: 24px;">
+  <div class="section-hero">
+    <div class="hero-grid-bg"></div>
+    <div class="container hero-grid">
+      <div style="animation: fadeUp 0.8s ease both; position: relative;">
+        <div class="eyebrow">
           <span style="width: 6px; height: 6px; border-radius: 50%; background: oklch(0.78 0.15 220); animation: pulseGlow 2s infinite;"></span>
           Senior Engineers · AI-Powered Development
         </div>
-        <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 56px; line-height: 1.08; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 24px; text-wrap: pretty;">Building Enterprise Software Faster with Senior Engineers <span style="background: linear-gradient(135deg, oklch(0.78 0.14 220), oklch(0.68 0.14 280)); -webkit-background-clip: text; background-clip: text; color: transparent;">+ AI</span></h1>
-        <p style="font-size: 18px; line-height: 1.6; color: oklch(0.78 0.015 258); max-width: 520px; margin: 0 0 36px; text-wrap: pretty;">Grupo Fernández develops modern business applications using experienced software engineers enhanced by Artificial Intelligence. We deliver secure, scalable, maintainable software without sacrificing quality.</p>
-        <div style="display: flex; gap: 14px; flex-wrap: wrap;">
-          <a href="#contact" style="background: oklch(0.97 0.006 258); color: oklch(0.17 0.035 258); padding: 14px 26px; border-radius: 10px; font-weight: 600; font-size: 15px; text-decoration: none;">Schedule a Consultation</a>
-          <a href="#work" style="background: oklch(1 0 0 / 0.06); border: 1px solid oklch(1 0 0 / 0.15); color: oklch(0.95 0.005 258); padding: 14px 26px; border-radius: 10px; font-weight: 600; font-size: 15px; text-decoration: none;">View Our Work</a>
+        <h1 class="hero-title">Building Enterprise Software Faster with Senior Engineers <span style="background: linear-gradient(135deg, oklch(0.78 0.14 220), oklch(0.68 0.14 280)); -webkit-background-clip: text; background-clip: text; color: transparent;">+ AI</span></h1>
+        <p class="hero-lead">Grupo Fernández develops modern business applications using experienced software engineers enhanced by Artificial Intelligence. We deliver secure, scalable, maintainable software without sacrificing quality.</p>
+        <div class="cta-row">
+          <a href="#contact" class="btn-primary">Schedule a Consultation</a>
+          <a href="#work" class="btn-secondary">View Our Work</a>
         </div>
       </div>
-      <div style="position: relative; animation: float 6s ease-in-out infinite;">
-        <div style="border-radius: 20px; background: linear-gradient(160deg, oklch(0.23 0.03 258), oklch(0.2 0.03 258)); border: 1px solid oklch(1 0 0 / 0.1); padding: 28px; box-shadow: 0 40px 80px -20px oklch(0.1 0.02 258 / 0.6);">
-          <svg width="100%" height="320" viewBox="0 0 400 320" style="display: block;">
+      <div class="hero-visual">
+        <div class="hero-panel">
+          <svg width="100%" viewBox="0 0 400 320" style="display: block; height: auto;">
             <defs>
               <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stop-color="oklch(0.78 0.14 220)"></stop>
@@ -90,26 +523,26 @@
             <rect x="160" y="278" width="80" height="30" rx="6" fill="oklch(1 0 0 / 0.05)" stroke="oklch(1 0 0 / 0.12)"></rect>
             <rect x="296" y="270" width="80" height="30" rx="6" fill="oklch(1 0 0 / 0.05)" stroke="oklch(1 0 0 / 0.12)"></rect>
           </svg>
-          <div style="text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: oklch(0.6 0.01 258); margin-top: 14px;">engineers + AI · cloud architecture</div>
+          <div class="mono-caption" style="margin-top: 14px;">engineers + AI · cloud architecture</div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- TRUST STRIP -->
-  <div style="padding: 40px 48px; border-bottom: 1px solid oklch(1 0 0 / 0.06);">
-    <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px;">
+  <div class="section-tight" style="border-bottom: 1px solid oklch(1 0 0 / 0.06);">
+    <div class="container trust-grid">
       <sc-for list="{{ trustBadges }}" as="badge" hint-placeholder-count="6">
-        <div style="text-align: center; padding: 16px 8px; border-radius: 12px; background: oklch(1 0 0 / 0.03); border: 1px solid oklch(1 0 0 / 0.07); font-size: 13.5px; font-weight: 500; color: oklch(0.85 0.01 258);">{{ badge }}</div>
+        <div class="trust-item">{{ badge }}</div>
       </sc-for>
     </div>
   </div>
 
   <!-- ABOUT -->
-  <div style="padding: 120px 48px;">
-    <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 72px; align-items: center;">
+  <div class="section">
+    <div class="container about-grid">
       <div style="border-radius: 18px; overflow: hidden; border: 1px solid oklch(1 0 0 / 0.08); background: oklch(0.21 0.03 258);">
-        <svg width="100%" height="380" viewBox="0 0 400 380" style="display: block;">
+        <svg width="100%" viewBox="0 0 400 380" style="display: block; height: auto;">
           <defs>
             <linearGradient id="layerGrad" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stop-color="oklch(0.75 0.13 220 / 0.35)"></stop>
@@ -132,13 +565,13 @@
           <circle cx="200" cy="185" r="4" fill="oklch(0.85 0.13 220)"></circle>
           <circle cx="310" cy="275" r="4" fill="oklch(0.85 0.01 258)"></circle>
         </svg>
-        <div style="text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: oklch(0.6 0.01 258); padding: 12px;">layered system architecture</div>
+        <div class="mono-caption" style="padding: 12px;">layered system architecture</div>
       </div>
       <div>
-        <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.75 0.13 220); font-weight: 600; margin-bottom: 14px;">About Us</div>
-        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 20px;">Technology Built by Experience</h2>
-        <p style="font-size: 16.5px; line-height: 1.7; color: oklch(0.78 0.015 258); margin: 0 0 28px; max-width: 560px;">Since 2024, Grupo Fernández has combined software engineering expertise with modern AI-assisted development practices. Every solution is architected by senior engineers, ensuring long-term maintainability, scalability, and reliability.</p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="label">About Us</div>
+        <h2 class="h2" style="margin-bottom: 20px;">Technology Built by Experience</h2>
+        <p class="body" style="margin-bottom: 28px; max-width: 560px;">Since 2024, Grupo Fernández has combined software engineering expertise with modern AI-assisted development practices. Every solution is architected by senior engineers, ensuring long-term maintainability, scalability, and reliability.</p>
+        <div class="about-points">
           <sc-for list="{{ aboutPoints }}" as="point" hint-placeholder-count="5">
             <div style="display: flex; align-items: center; gap: 10px; font-size: 14.5px; color: oklch(0.9 0.008 258);">
               <span style="width: 6px; height: 6px; border-radius: 50%; background: oklch(0.75 0.13 220); flex-shrink: 0;"></span>{{ point }}
@@ -150,15 +583,15 @@
   </div>
 
   <!-- SERVICES -->
-  <div id="services" style="padding: 100px 48px; background: oklch(0.155 0.032 258); border-top: 1px solid oklch(1 0 0 / 0.06); border-bottom: 1px solid oklch(1 0 0 / 0.06);">
-    <div style="max-width: 1240px; margin: 0 auto;">
-      <div style="text-align: center; margin-bottom: 56px;">
-        <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.75 0.13 220); font-weight: 600; margin-bottom: 14px;">Our Services</div>
-        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; letter-spacing: -0.01em; margin: 0;">What we build</h2>
+  <div id="services" class="section section-muted">
+    <div class="container">
+      <div class="section-head">
+        <div class="label">Our Services</div>
+        <h2 class="h2">What we build</h2>
       </div>
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+      <div class="services-grid">
         <sc-for list="{{ services }}" as="svc" hint-placeholder-count="6">
-          <div style="background: oklch(1 0 0 / 0.03); border: 1px solid oklch(1 0 0 / 0.08); border-radius: 16px; padding: 28px;">
+          <div class="service-card">
             <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, oklch(0.75 0.14 220 / 0.25), oklch(0.65 0.14 280 / 0.25)); display: flex; align-items: center; justify-content: center; margin-bottom: 18px;">
               <div style="width: 16px; height: 16px; border-radius: 4px; background: linear-gradient(135deg, oklch(0.78 0.14 220), oklch(0.68 0.14 280));"></div>
             </div>
@@ -171,20 +604,20 @@
   </div>
 
   <!-- FEATURED PROJECTS -->
-  <div id="work" style="padding: 120px 48px;">
-    <div style="max-width: 1240px; margin: 0 auto;">
-      <div style="text-align: center; margin-bottom: 64px;">
-        <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.75 0.13 220); font-weight: 600; margin-bottom: 14px;">Featured Projects</div>
-        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; letter-spacing: -0.01em; margin: 0;">Real platforms, real scale</h2>
+  <div id="work" class="section" style="padding-top: 72px;">
+    <div class="container">
+      <div class="section-head">
+        <div class="label">Featured Projects</div>
+        <h2 class="h2">Real platforms, real scale</h2>
       </div>
 
       <!-- Play Land Bark -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; margin-bottom: 96px;">
-        <div>
+      <div class="project">
+        <div class="project-copy">
           <div style="font-size: 13px; font-weight: 600; color: oklch(0.75 0.13 220); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Pet Care Platform</div>
-          <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; margin: 0 0 14px;">Play Land Bark</h3>
-          <p style="font-size: 15.5px; line-height: 1.65; color: oklch(0.76 0.015 258); margin: 0 0 22px;">A complete management platform for pet care businesses, covering hotel stays, grooming, retail, and scheduling in one system.</p>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <h3>Play Land Bark</h3>
+          <p class="body" style="margin: 0 0 22px;">A complete management platform for pet care businesses, covering hotel stays, grooming, retail, and scheduling in one system.</p>
+          <div class="feature-grid">
             <sc-for list="{{ playLandBarkFeatures }}" as="feat" hint-placeholder-count="8">
               <div style="font-size: 13.5px; color: oklch(0.85 0.008 258); display: flex; align-items: center; gap: 8px;">
                 <span style="width: 5px; height: 5px; border-radius: 50%; background: oklch(0.7 0.13 220);"></span>{{ feat }}
@@ -192,14 +625,14 @@
             </sc-for>
           </div>
         </div>
-        <div style="position: relative; padding: 20px 20px 40px 0;">
-          <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" url="app.playlandbark.com/pets" width="520" height="330" hint-size="520px,330px" style="border-radius: 10px; overflow: hidden; box-shadow: 0 30px 60px -20px oklch(0.1 0.02 258 / 0.7);">
-            <img src="uploads/pasted-1784342360780-0.png" style="width: 100%; display: block;"></img>
+        <div class="project-media is-padded">
+          <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" url="app.playlandbark.com/pets" width="520" height="330" hint-size="520px,330px" style="display: block; width: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 30px 60px -20px oklch(0.1 0.02 258 / 0.7);">
+            <img src="uploads/pasted-1784342360780-0.png" alt="Play Land Bark pets dashboard"></img>
           </x-import>
-          <div style="position: absolute; right: -8px; bottom: 0; width: 138px; height: 300px; overflow: hidden; box-shadow: 0 24px 48px -16px oklch(0.1 0.02 258 / 0.8); border-radius: 24px;">
+          <div class="phone-overlay">
             <div style="width: 402px; height: 874px; transform: scale(0.3433); transform-origin: top left;">
               <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" title="Sign in" hint-size="402px,874px">
-                <img src="uploads/app.playlandbark.com_sign-in.png" style="width: 100%; display: block;"></img>
+                <img src="uploads/app.playlandbark.com_sign-in.png" alt="Play Land Bark sign in"></img>
               </x-import>
             </div>
           </div>
@@ -207,12 +640,12 @@
       </div>
 
       <!-- Akount -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; margin-bottom: 96px;">
-        <div style="order: 2;">
+      <div class="project is-reversed">
+        <div class="project-copy">
           <div style="font-size: 13px; font-weight: 600; color: oklch(0.75 0.13 220); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">ERP · Healthcare</div>
-          <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; margin: 0 0 14px;">Akount</h3>
-          <p style="font-size: 15.5px; line-height: 1.65; color: oklch(0.76 0.015 258); margin: 0 0 22px;">An all-in-one ERP designed for multiple industries, adaptable for clinics, hospitals, and medical practices.</p>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <h3>Akount</h3>
+          <p class="body" style="margin: 0 0 22px;">An all-in-one ERP designed for multiple industries, adaptable for clinics, hospitals, and medical practices.</p>
+          <div class="feature-grid">
             <sc-for list="{{ akountFeatures }}" as="feat" hint-placeholder-count="8">
               <div style="font-size: 13.5px; color: oklch(0.85 0.008 258); display: flex; align-items: center; gap: 8px;">
                 <span style="width: 5px; height: 5px; border-radius: 50%; background: oklch(0.7 0.13 220);"></span>{{ feat }}
@@ -220,25 +653,25 @@
             </sc-for>
           </div>
         </div>
-        <div style="order: 1; position: relative; padding: 20px 40px 56px 20px;">
-          <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" url="app.akount.io/dashboard" width="480" height="300" hint-size="480px,300px" style="border-radius: 10px; overflow: hidden; box-shadow: 0 30px 60px -20px oklch(0.1 0.02 258 / 0.7);">
-            <img src="uploads/pasted-1784342896517-0.png" style="width: 100%; display: block;"></img>
+        <div class="project-media is-padded-alt">
+          <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" url="app.akount.io/dashboard" width="480" height="300" hint-size="480px,300px" style="display: block; width: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 30px 60px -20px oklch(0.1 0.02 258 / 0.7);">
+            <img src="uploads/pasted-1784342896517-0.png" alt="Akount dashboard"></img>
           </x-import>
-          <div style="position: absolute; right: 0; bottom: 0; width: 300px; box-shadow: 0 24px 48px -16px oklch(0.1 0.02 258 / 0.8);">
-            <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" url="app.akount.io/citas" width="300" height="188" hint-size="300px,188px" style="border-radius: 10px; overflow: hidden;">
-              <img src="uploads/pasted-1784342901411-0.png" style="width: 100%; display: block;"></img>
+          <div class="secondary-shot">
+            <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" url="app.akount.io/citas" width="300" height="188" hint-size="300px,188px" style="display: block; width: 100%; border-radius: 10px; overflow: hidden;">
+              <img src="uploads/pasted-1784342901411-0.png" alt="Akount appointments"></img>
             </x-import>
           </div>
         </div>
       </div>
 
       <!-- Cleany App -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center;">
-        <div>
+      <div class="project">
+        <div class="project-copy">
           <div style="font-size: 13px; font-weight: 600; color: oklch(0.75 0.13 220); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Home & Handyman Services</div>
-          <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; margin: 0 0 14px;">Cleany App</h3>
-          <p style="font-size: 15.5px; line-height: 1.65; color: oklch(0.76 0.015 258); margin: 0 0 22px;">A booking platform for cleaning and handyman services, connecting homes and businesses with vetted professionals for cleaning, electrical, plumbing, and more.</p>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <h3>Cleany App</h3>
+          <p class="body" style="margin: 0 0 22px;">A booking platform for cleaning and handyman services, connecting homes and businesses with vetted professionals for cleaning, electrical, plumbing, and more.</p>
+          <div class="feature-grid">
             <sc-for list="{{ cleanyFeatures }}" as="feat" hint-placeholder-count="8">
               <div style="font-size: 13.5px; color: oklch(0.85 0.008 258); display: flex; align-items: center; gap: 8px;">
                 <span style="width: 5px; height: 5px; border-radius: 50%; background: oklch(0.7 0.13 220);"></span>{{ feat }}
@@ -246,9 +679,9 @@
             </sc-for>
           </div>
         </div>
-        <div style="padding: 20px 20px 40px 0;">
-          <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" url="cleanyapp.com/book" width="520" height="380" hint-size="520px,380px" style="border-radius: 10px; overflow: hidden; box-shadow: 0 30px 60px -20px oklch(0.1 0.02 258 / 0.7);">
-            <img src="uploads/pasted-1784344285245-0.png" style="width: 100%; display: block;"></img>
+        <div class="project-media is-padded">
+          <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" url="cleanyapp.com/book" width="520" height="380" hint-size="520px,380px" style="display: block; width: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 30px 60px -20px oklch(0.1 0.02 258 / 0.7);">
+            <img src="uploads/pasted-1784344285245-0.png" alt="Cleany App booking"></img>
           </x-import>
         </div>
       </div>
@@ -256,13 +689,13 @@
   </div>
 
   <!-- WHY CHOOSE -->
-  <div style="padding: 100px 48px; background: oklch(0.155 0.032 258); border-top: 1px solid oklch(1 0 0 / 0.06); border-bottom: 1px solid oklch(1 0 0 / 0.06);">
-    <div style="max-width: 1000px; margin: 0 auto;">
-      <div style="text-align: center; margin-bottom: 56px;">
-        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; letter-spacing: -0.01em; margin: 0;">Why Choose Grupo Fernández</h2>
+  <div class="section section-muted">
+    <div class="container-md">
+      <div class="section-head">
+        <h2 class="h2">Why Choose Grupo Fernández</h2>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        <div style="border-radius: 16px; padding: 32px; background: oklch(1 0 0 / 0.02); border: 1px solid oklch(1 0 0 / 0.07);">
+      <div class="compare-grid">
+        <div class="compare-card muted">
           <h3 style="font-size: 15px; font-weight: 600; color: oklch(0.65 0.01 258); margin: 0 0 20px; text-transform: uppercase; letter-spacing: 0.04em;">Traditional Development</h3>
           <sc-for list="{{ traditionalList }}" as="item" hint-placeholder-count="3">
             <div style="display: flex; align-items: center; gap: 10px; font-size: 14.5px; color: oklch(0.62 0.012 258); margin-bottom: 14px;">
@@ -270,7 +703,7 @@
             </div>
           </sc-for>
         </div>
-        <div style="border-radius: 16px; padding: 32px; background: linear-gradient(160deg, oklch(0.24 0.045 250), oklch(0.2 0.04 258)); border: 1px solid oklch(0.5 0.08 230 / 0.4);">
+        <div class="compare-card accent">
           <h3 style="font-size: 15px; font-weight: 600; color: oklch(0.8 0.13 220); margin: 0 0 20px; text-transform: uppercase; letter-spacing: 0.04em;">Grupo Fernández</h3>
           <sc-for list="{{ gfList }}" as="item" hint-placeholder-count="8">
             <div style="display: flex; align-items: center; gap: 10px; font-size: 14.5px; color: oklch(0.94 0.008 258); margin-bottom: 12px;">
@@ -283,30 +716,30 @@
   </div>
 
   <!-- TECH STACK -->
-  <div style="padding: 100px 48px;">
-    <div style="max-width: 1100px; margin: 0 auto; text-align: center;">
-      <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.75 0.13 220); font-weight: 600; margin-bottom: 14px;">Technology Stack</div>
-      <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 40px;">Modern, proven, production-grade</h2>
-      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;">
+  <div class="section">
+    <div class="container-stack tech-wrap">
+      <div class="label">Technology Stack</div>
+      <h2 class="h2" style="margin: 0 0 32px;">Modern, proven, production-grade</h2>
+      <div class="tech-list">
         <sc-for list="{{ techStack }}" as="tech" hint-placeholder-count="19">
-          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; padding: 10px 16px; border-radius: 8px; background: oklch(1 0 0 / 0.04); border: 1px solid oklch(1 0 0 / 0.09); color: oklch(0.85 0.01 258);">{{ tech }}</div>
+          <div class="tech-chip">{{ tech }}</div>
         </sc-for>
       </div>
     </div>
   </div>
 
   <!-- PROCESS -->
-  <div id="process" style="padding: 100px 48px; background: oklch(0.155 0.032 258); border-top: 1px solid oklch(1 0 0 / 0.06); border-bottom: 1px solid oklch(1 0 0 / 0.06);">
-    <div style="max-width: 1240px; margin: 0 auto;">
-      <div style="text-align: center; margin-bottom: 64px;">
-        <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.75 0.13 220); font-weight: 600; margin-bottom: 14px;">Development Process</div>
-        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 16px;">AI accelerates. Engineers own quality.</h2>
-        <p style="font-size: 15.5px; color: oklch(0.75 0.015 258); max-width: 620px; margin: 0 auto;">AI speeds up implementation while senior engineers remain responsible for architecture, code review, testing, and quality assurance.</p>
+  <div id="process" class="section section-muted">
+    <div class="container">
+      <div class="section-head">
+        <div class="label">Development Process</div>
+        <h2 class="h2" style="margin-bottom: 16px;">AI accelerates. Engineers own quality.</h2>
+        <p class="body" style="max-width: 620px; margin: 0 auto; text-align: center;">AI speeds up implementation while senior engineers remain responsible for architecture, code review, testing, and quality assurance.</p>
       </div>
-      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; position: relative;">
-        <div style="position: absolute; top: 19px; left: 8%; right: 8%; height: 1px; background: oklch(1 0 0 / 0.12);"></div>
+      <div class="process-grid">
+        <div class="process-line"></div>
         <sc-for list="{{ processSteps }}" as="step" hint-placeholder-count="6">
-          <div style="position: relative; text-align: center;">
+          <div class="process-step">
             <div style="width: 38px; height: 38px; border-radius: 50%; background: oklch(0.2 0.03 258); border: 1px solid oklch(0.6 0.1 220 / 0.5); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; color: oklch(0.85 0.12 220); margin: 0 auto 16px; position: relative; z-index: 1;">{{ step.n }}</div>
             <div style="font-size: 14px; font-weight: 600; color: oklch(0.93 0.008 258);">{{ step.name }}</div>
           </div>
@@ -316,15 +749,15 @@
   </div>
 
   <!-- FAQ -->
-  <div id="faq" style="padding: 100px 48px; background: oklch(0.155 0.032 258); border-top: 1px solid oklch(1 0 0 / 0.06); border-bottom: 1px solid oklch(1 0 0 / 0.06);">
-    <div style="max-width: 800px; margin: 0 auto;">
-      <div style="text-align: center; margin-bottom: 48px;">
-        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; letter-spacing: -0.01em; margin: 0;">Frequently Asked Questions</h2>
+  <div id="faq" class="section section-muted">
+    <div class="container-sm">
+      <div class="section-head">
+        <h2 class="h2">Frequently Asked Questions</h2>
       </div>
       <sc-for list="{{ faqItems }}" as="item" hint-placeholder-count="6">
         <div style="border-bottom: 1px solid oklch(1 0 0 / 0.09); padding: 20px 4px; cursor: pointer;" onclick="{{ item.toggle }}">
           <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
-            <div style="font-size: 16px; font-weight: 600; color: oklch(0.94 0.008 258);">{{ item.q }}</div>
+            <div class="faq-q">{{ item.q }}</div>
             <div style="font-size: 20px; color: oklch(0.7 0.12 220); flex-shrink: 0;">{{ item.symbol }}</div>
           </div>
           <sc-if value="{{ item.isOpen }}">
@@ -336,35 +769,35 @@
   </div>
 
   <!-- CONTACT -->
-  <div id="contact" style="padding: 110px 48px;">
-    <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px;">
+  <div id="contact" class="section">
+    <div class="container-stack contact-grid">
       <div>
-        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 18px; text-wrap: pretty;">Let's Build Your Next Software Project</h2>
-        <p style="font-size: 16px; line-height: 1.65; color: oklch(0.76 0.015 258); margin: 0 0 32px; max-width: 420px;">Tell us about your project and we'll get back to you within one business day.</p>
+        <h2 class="h2" style="margin: 0 0 18px; text-wrap: pretty;">Let's Build Your Next Software Project</h2>
+        <p class="body" style="margin: 0 0 32px; max-width: 420px;">Tell us about your project and we'll get back to you within one business day.</p>
         <div style="display: flex; flex-direction: column; gap: 16px; font-size: 14.5px; color: oklch(0.85 0.01 258);">
           <div>Email — info@grupofernandez.co</div>
           <div>Phone — +504 3365 2884</div>
           <div>San Pedro Sula, Honduras</div>
         </div>
       </div>
-      <div style="background: oklch(1 0 0 / 0.03); border: 1px solid oklch(1 0 0 / 0.08); border-radius: 18px; padding: 8px; overflow: hidden;">
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSev5sI65HOmEGAAFm4QNwoykODTMjgjnevE8Fqov-xMfhkDSg/viewform?embedded=true" style="width: 100%; height: 900px; border: none; border-radius: 12px; background: oklch(0.97 0.006 258); display: block;" title="Contact form">Loading…</iframe>
+      <div class="contact-form">
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSev5sI65HOmEGAAFm4QNwoykODTMjgjnevE8Fqov-xMfhkDSg/viewform?embedded=true" title="Contact form">Loading…</iframe>
       </div>
     </div>
   </div>
 
   <!-- FOOTER -->
-  <div style="padding: 56px 48px; border-top: 1px solid oklch(1 0 0 / 0.08);">
-    <div style="max-width: 1240px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px;">
+  <div class="footer">
+    <div class="container footer-inner">
       <div style="display: flex; align-items: center; gap: 10px;">
         <div style="width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, oklch(0.75 0.14 220), oklch(0.65 0.14 280));"></div>
         <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;">Grupo Fernández</span>
       </div>
-      <div style="display: flex; gap: 28px;">
-        <a href="#services" style="color: oklch(0.7 0.012 258); text-decoration: none; font-size: 13.5px;">Services</a>
-        <a href="#work" style="color: oklch(0.7 0.012 258); text-decoration: none; font-size: 13.5px;">Portfolio</a>
-        <a href="#contact" style="color: oklch(0.7 0.012 258); text-decoration: none; font-size: 13.5px;">Contact</a>
-        <a href="#" style="color: oklch(0.7 0.012 258); text-decoration: none; font-size: 13.5px;">Privacy Policy</a>
+      <div class="footer-links">
+        <a href="#services">Services</a>
+        <a href="#work">Portfolio</a>
+        <a href="#contact">Contact</a>
+        <a href="#">Privacy Policy</a>
       </div>
       <div style="font-size: 13px; color: oklch(0.6 0.012 258);">© 2024–2026 Grupo Fernández</div>
     </div>

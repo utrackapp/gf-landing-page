@@ -107,13 +107,20 @@ function ChromeWindow({
 }) {
   return (
     <div style={{
-      width, height, borderRadius: 10, overflow: 'hidden',
+      width: '100%',
+      maxWidth: width,
+      aspectRatio: `${width} / ${height}`,
+      height: 'auto',
+      borderRadius: 10,
+      overflow: 'hidden',
       boxShadow: '0 24px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.1)',
-      display: 'flex', flexDirection: 'column', background: CHROME_C.tabBg,
+      display: 'flex',
+      flexDirection: 'column',
+      background: CHROME_C.tabBg,
     }}>
       <ChromeTabBar tabs={tabs} activeIndex={activeIndex} />
       <ChromeToolbar url={url} />
-      <div style={{ flex: 1, background: '#fff', overflow: 'auto' }}>
+      <div style={{ flex: 1, minHeight: 0, background: '#fff', overflow: 'auto' }}>
         {children}
       </div>
     </div>
